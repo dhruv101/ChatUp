@@ -94,8 +94,23 @@ a {
 .chat-messages .message {
     padding: 10px;
     margin-bottom: 15px;
-    background-color: var(--light-color);
     border-radius: 5px;
+    width: 60%;
+}
+
+.chat-messages .system-message {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #7777771a;
+}
+
+.chat-messages .others-message {
+    background-color: #7386ff59;
+}
+
+.chat-messages .self-message {
+    margin-left: auto;
+    background-color: #5cb87363;
 }
 
 .chat-messages .message .meta {

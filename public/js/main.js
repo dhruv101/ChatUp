@@ -1,7 +1,7 @@
-const chatForm = document.getElementById('chat-form');
+const chatForm = document.querySelector('#chat-form');
 const chatMessages = document.querySelector('.chat-messages');
-const roomName = document.getElementById('room-name');
-const userList = document.getElementById('users');
+const roomName = document.querySelector('#room-name');
+const userList = document.querySelector('#users');
 
 //Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
@@ -19,10 +19,17 @@ socket.on('roomUsers', ({ room, users }) => {
 	outputUsers(users);
 });
 
-//Message from server
-socket.on('message', message => {
-	console.log(message);
-	outputMessage(message);
+//System Message from server
+socket.on('systemMsg', message => {
+	outputMessage(message, 'systemMsg');
+
+	//Scroll down
+	chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+//Chat Message from server
+socket.on('chatMsg', message => {
+	outputMessage(message, 'chatMsg');
 
 	//Scroll down
 	chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -44,9 +51,21 @@ chatForm.addEventListener('submit', e => {
 });
 
 //Output message to DOM
-function outputMessage(message) {
+function outputMessage(message, type) {
 	const div = document.createElement('div');
 	div.classList.add('message');
+
+	if (type === 'systemMsg') {
+		div.classList.add('system-message');
+	} else if (type === 'chatMsg') {
+		//checking if the message is sent by this user
+		if (socket.id === message.id) {
+			div.classList.add('self-message');
+		} else {
+			div.classList.add('others-message');
+		}
+	}
+
 	div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
                      <p class="text">
                         ${message.text}

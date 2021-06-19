@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 //Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-const botName = 'Bot';
+const botName = 'ChatUp Bot';
 
 //Run when client connects
 io.on('connection', socket => {
@@ -23,10 +23,12 @@ io.on('connection', socket => {
 		socket.join(user.room);
 
 		//Welcome current user
-		socket.emit('message', formatMessage(botName, 'Welcome to Chatting Engine'));
+		socket.emit('systemMsg', formatMessage(botName, 'Welcome to ChatUp'));
 
 		//Broadcast when a user connects
-		socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the chat`));
+		socket.broadcast
+			.to(user.room)
+			.emit('systemMsg', formatMessage(botName, `${user.username} has joined the chat`));
 
 		//Send users and room info
 		io.to(user.room).emit('roomUsers', {
@@ -38,14 +40,14 @@ io.on('connection', socket => {
 	//Listen for chatMessage
 	socket.on('chatMessage', msg => {
 		const user = getCurrentUser(socket.id);
-		io.to(user.room).emit('message', formatMessage(user.username, msg));
+		io.to(user.room).emit('chatMsg', formatMessage(user.username, msg, socket.id));
 	});
 
 	//Runs when client disconnects
 	socket.on('disconnect', () => {
 		const user = userLeave(socket.id);
 		if (user) {
-			io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
+			io.to(user.room).emit('systemMsg', formatMessage(botName, `${user.username} has left the chat`));
 
 			//Send users and room info
 			io.to(user.room).emit('roomUsers', {
