@@ -95,13 +95,14 @@ a {
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 5px;
-    width: 60%;
+    width: fit-content;
 }
 
 .chat-messages .system-message {
     margin-left: auto;
     margin-right: auto;
     background-color: #7777771a;
+    border-radius: 40px;
 }
 
 .chat-messages .others-message {

@@ -21,7 +21,7 @@ socket.on('roomUsers', ({ room, users }) => {
 
 //System Message from server
 socket.on('systemMsg', message => {
-	outputMessage(message, 'systemMsg');
+	outputSystemMessage(message);
 
 	//Scroll down
 	chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -29,7 +29,7 @@ socket.on('systemMsg', message => {
 
 //Chat Message from server
 socket.on('chatMsg', message => {
-	outputMessage(message, 'chatMsg');
+	outputChatMessage(message);
 
 	//Scroll down
 	chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -50,20 +50,28 @@ chatForm.addEventListener('submit', e => {
 	e.target.elements.msg.focus();
 });
 
-//Output message to DOM
-function outputMessage(message, type) {
+//Output system message to DOM
+function outputSystemMessage(message) {
+	const div = document.createElement('div');
+	div.classList.add('message');
+	div.classList.add('system-message');
+
+	div.innerHTML = `<p>
+                        ${message.text}
+                     </p>`;
+	document.querySelector('.chat-messages').appendChild(div);
+}
+
+//Output chat message to DOM
+function outputChatMessage(message) {
 	const div = document.createElement('div');
 	div.classList.add('message');
 
-	if (type === 'systemMsg') {
-		div.classList.add('system-message');
-	} else if (type === 'chatMsg') {
-		//checking if the message is sent by this user
-		if (socket.id === message.id) {
-			div.classList.add('self-message');
-		} else {
-			div.classList.add('others-message');
-		}
+	//checking if the message is sent by this user
+	if (socket.id === message.id) {
+		div.classList.add('self-message');
+	} else {
+		div.classList.add('others-message');
 	}
 
 	div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
